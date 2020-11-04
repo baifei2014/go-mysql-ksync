@@ -134,8 +134,8 @@ func (ins *Instance) OnRow(ev *canal.RowsEvent) error {
 	for _, t := range ins.Check(ev) {
 		t.send(ev)
 	}
-	// log.Infof("syncer_counter", ins.String(), ev.Table.Schema, tblReplacer.ReplaceAllString(ev.Table.Name, ""), ev.Action)
-	// log.State("delay_syncer", ins.delay(), ins.String(), ev.Table.Schema, "", "")
+	log.Info("addr:%s,schema:%s,table:%s,action:%s", ins.String(), ev.Table.Schema, tblReplacer.ReplaceAllString(ev.Table.Name, ""), ev.Action)
+	log.Info("delay:%d,addr:%s,schema:%s,%s,%s", ins.delay(), ins.String(), ev.Table.Schema, "", "")
 	ins.latestTimestamp = time.Now().Unix()
 	return nil
 }
