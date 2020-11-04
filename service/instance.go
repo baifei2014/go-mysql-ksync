@@ -52,6 +52,7 @@ func NewInstance(c *conf.InsConfig) (ins *Instance, err error) {
 		return
 	}
 	// implement self as canal's event handler
+	ins.Canal.SetEventHandler(ins)
 	return
 }
 
@@ -124,9 +125,13 @@ func (ins *Instance) OnGTID(mysql.GTIDSet) error {
 	return nil
 }
 
-// OnPosSynced OnPosSynced
-func (ins *Instance) OnPosSynced(pos mysql.Position, force bool) error {
+// OnPosSynced OnPosSynced mysql.Position, mysql.GTIDSet, bool
+func (ins *Instance) OnPosSynced(pos mysql.Position, set mysql.GTIDSet, force bool) error {
 	return ins.master.Save(pos, force)
+}
+
+func (ins *Instance) OnTableChanged(schema string, table string) error {
+	return nil
 }
 
 // OnRow send the envent to table
