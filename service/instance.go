@@ -45,6 +45,11 @@ func NewInstance(c *conf.InsConfig) (ins *Instance, err error) {
 		ins.err = errors.Wrap(err, "init master info")
 		return
 	}
+	if ins.targets, err = newTargets(c); err != nil {
+		log.Error("db.init() error(%v)", err)
+		ins.err = errors.Wrap(err, "db init")
+		return
+	}
 	ins.latestTimestamp = time.Now().Unix()
 	// new canal
 	if err = ins.newCanal(); err != nil {
@@ -75,6 +80,18 @@ func (ins *Instance) newCanal() error {
 	var err error
 	ins.Canal, err = canal.NewCanal(cfg)
 	return errors.Wrap(err, "new canal")
+}
+
+func newTargets(c *conf.InsConfig) (targets []*Target, err error) {
+	targets = make([]*Target, 0, len(c.Databases))
+	for _, db := range c.Databases {
+		if err = db.CheckTable(c.Addr, c.User, c.Password); err != nil {
+			log.Error("db.CheckTable() error(%v)", err)
+			return
+		}
+		targets = append(targets, NewTarget(db))
+	}
+	return
 }
 
 func (ins *Instance) Check(ev *canal.RowsEvent) (ts []*Target) {

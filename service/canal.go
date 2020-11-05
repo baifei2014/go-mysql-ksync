@@ -13,7 +13,7 @@ import (
 
 var (
 	stats       = prom.New().WithState("go_canal_counter", []string{"type", "addr", "scheme", "table", "action"})
-	tblReplacer = regexp.MustCompile("[0-9]+") // NOTE: replace number of sub-table name to space
+	tblReplacer = regexp.MustCompile("[0-9_]+") // NOTE: replace number of sub-table name to space
 )
 
 type Canal struct {
